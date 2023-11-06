@@ -1,0 +1,5 @@
+transformers
+soundfile
+pathlib
+loguru
+accelerate

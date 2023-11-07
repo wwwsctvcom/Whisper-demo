@@ -1,6 +1,16 @@
-# whisper-demo
+# Whisper-demo
 speech recognition by whisper model, offering a simple training and predict demo code.
 
+
+# Dataset Download
+> 数据集下载地址`https://www.kaggle.com/datasets/bryanpark/chinese-single-speaker-speech-dataset`
+
+数据集的目录结构：
+```
+chinese-single-speaker-speech-dataset/call_to_arms/
+chinese-single-speaker-speech-dataset/chao_hua_si_she/
+chinese-single-speaker-speech-dataset/transcript.txt
+```
 
 # Training
 ```
@@ -24,7 +34,20 @@ Epoch: 5/5: 100%|██████████| 1486/1486 [13:42<00:00,  1.81it
 ```
 python predict.py
 ```
-> label:
-> predict:
+```
+label:   《呐喊》自序·鲁迅·我在年青时候也曾经做过许多梦
+predict: 《呐喊》自序·鲁迅·我在年青时候也曾经做过许多梦
+```
 
+
+# Wer
+由于demo数据集中验证数据没有给label数据，只提供了wav的数据，所以无法验证wer，但是通过手动单个测试发现5个epoch的训练效果也是非常好的,
+这里提供一个计算wer的demo code用于用户去计算wer；
+```
+import evaluate
+
+metric = evaluate.load("wer")
+wer = metric.compute(predictions="我是中国仁", references="我是中国人")
+print(wer)  # 0.2
+```
 

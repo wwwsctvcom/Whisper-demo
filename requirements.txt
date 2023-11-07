@@ -3,3 +3,5 @@ soundfile
 pathlib
 loguru
 accelerate
+evaluate
+jiwer 

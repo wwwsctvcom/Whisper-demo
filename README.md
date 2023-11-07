@@ -5,7 +5,7 @@ speech recognition by whisper model, offering a simple training and predict demo
 # Dataset Download
 > 数据集下载地址`https://www.kaggle.com/datasets/bryanpark/chinese-single-speaker-speech-dataset`
 
-数据集的目录结构：
+数据集的目录结构，使用时将下载好的代码放到data目录下；
 ```
 chinese-single-speaker-speech-dataset/call_to_arms/
 chinese-single-speaker-speech-dataset/chao_hua_si_she/

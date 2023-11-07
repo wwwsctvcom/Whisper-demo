@@ -5,11 +5,10 @@ from accelerate import Accelerator
 from utils.tools import get_lr
 
 
-
 class Trainer:
 
     def __init__(self,
-                 args=None,
+                 args = None,
                  model=None,
                  feature_extractor=None,
                  tokenizer=None,
@@ -20,21 +19,32 @@ class Trainer:
         self.args = args
         if self.args is None:
             raise ValueError("args is None!")
-
-        self.model = model
-        self.model.to(self.args.device)
+            
+        self.accelerator = accelerator if accelerator is not None else Accelerator()
+        
+        if self.accelerator is not None:
+            # if use accelerate, need to remove model.to(device).
+            self.model = model
+        else:
+            self.model = model
+            self.model.to(self.args.device)
 
         self.optimizer = optimizer
         if optimizer is None:
             raise ValueError("optimizer is None!")
-
+        
         self.feature_extractor = feature_extractor
         self.tokenizer = tokenizer
 
         self.scheduler = scheduler
-        self.accelerator = accelerator if accelerator is not None else Accelerator()
 
     def train(self, train_data_loader=None, test_data_loader=None):
+        if self.accelerator is not None:
+            train_data_loader, test_data_loader, self.model, self.optimizer = self.accelerator.prepare(train_data_loader, 
+                                                                                                       test_data_loader, 
+                                                                                                       self.model, 
+                                                                                                       self.optimizer)
+        
         for epoch in range(1, self.args.epochs + 1):
             train_total_loss = 0
             self.model.train()
@@ -85,6 +95,7 @@ class Trainer:
                         outputs = self.model(**batch)
                         loss = outputs.loss
 
+                        # tqdm
                         test_total_loss += loss.item()
                         test_pbar.set_postfix(
                             **{'test average loss': test_total_loss / (step + 1), 'test loss': loss.item()})
@@ -92,6 +103,11 @@ class Trainer:
     def save_model(self, out_dir: str = None):
         if not Path(out_dir).exists():
             Path(out_dir).mkdir()
+
+        if self.accelerator is not None:
+            self.accelerator.wait_for_everyone()
+            self.model = self.accelerator.unwrap_model(self.model)
+            
         self.model.save_pretrained(out_dir, torch_dtype=torch.float16)
         self.feature_extractor.save_pretrained(out_dir)
         self.tokenizer.save_pretrained(out_dir)

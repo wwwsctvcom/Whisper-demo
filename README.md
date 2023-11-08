@@ -1,5 +1,5 @@
 # Whisper-demo
-speech recognition by whisper model, offering a simple training and predict demo code.
+speech recognition based whisper model, offering a simple training and predict demo code.
 
 
 # Dataset Download
